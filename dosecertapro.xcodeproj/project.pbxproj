@@ -6,8 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F67A83832F65A1570086AE8E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = F67A83822F65A1570086AE8E /* FirebaseAuth */; };
+		F67A83852F65A1570086AE8E /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = F67A83842F65A1570086AE8E /* FirebaseCore */; };
+		F67A83872F65A1570086AE8E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = F67A83862F65A1570086AE8E /* FirebaseFirestore */; };
+		F67A83A02F65B6620086AE8E /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F67A839E2F65B65B0086AE8E /* .gitignore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F67A834B2F659A4C0086AE8E /* dosecertapro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dosecertapro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F67A839E2F65B65B0086AE8E /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -23,6 +31,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F67A83852F65A1570086AE8E /* FirebaseCore in Frameworks */,
+				F67A83832F65A1570086AE8E /* FirebaseAuth in Frameworks */,
+				F67A83872F65A1570086AE8E /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32,6 +43,7 @@
 		F67A83422F659A4C0086AE8E = {
 			isa = PBXGroup;
 			children = (
+				F67A839E2F65B65B0086AE8E /* .gitignore */,
 				F67A834D2F659A4C0086AE8E /* dosecertapro */,
 				F67A834C2F659A4C0086AE8E /* Products */,
 			);
@@ -65,6 +77,9 @@
 			);
 			name = dosecertapro;
 			packageProductDependencies = (
+				F67A83822F65A1570086AE8E /* FirebaseAuth */,
+				F67A83842F65A1570086AE8E /* FirebaseCore */,
+				F67A83862F65A1570086AE8E /* FirebaseFirestore */,
 			);
 			productName = dosecertapro;
 			productReference = F67A834B2F659A4C0086AE8E /* dosecertapro.app */;
@@ -94,6 +109,9 @@
 			);
 			mainGroup = F67A83422F659A4C0086AE8E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F67A83812F65A1570086AE8E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F67A834C2F659A4C0086AE8E /* Products */;
 			projectDirPath = "";
@@ -109,6 +127,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F67A83A02F65B6620086AE8E /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,6 +351,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F67A83812F65A1570086AE8E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F67A83822F65A1570086AE8E /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F67A83812F65A1570086AE8E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		F67A83842F65A1570086AE8E /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F67A83812F65A1570086AE8E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		F67A83862F65A1570086AE8E /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F67A83812F65A1570086AE8E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F67A83432F659A4C0086AE8E /* Project object */;
 }
