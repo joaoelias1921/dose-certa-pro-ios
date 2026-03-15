@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Medicine: Codable, Identifiable {
+struct Medicine: Codable, Identifiable, Hashable {
     var id: String? = UUID().uuidString
     var name: String
     var dosage: String

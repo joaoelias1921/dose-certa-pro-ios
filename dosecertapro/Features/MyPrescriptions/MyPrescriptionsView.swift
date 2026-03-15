@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct MyPrescriptionsView: View {
+    @EnvironmentObject var coordinator: AppCoordinator
     @State private var viewModel: MyPrescriptionsViewModel
     @State private var showDeleteAlert = false
     @State private var prescriptionToDelete: Prescription?
     @State private var showAlert = true
-    let container: DependencyContainer
     
     init(container: DependencyContainer) {
-        self.container = container
         self._viewModel = State(
             initialValue: MyPrescriptionsViewModel(
                 prescriptionService: container.prescriptionService,
@@ -25,84 +24,80 @@ struct MyPrescriptionsView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            ZStack(alignment: .bottomTrailing) {
-                Color(uiColor: .systemGroupedBackground)
-                    .ignoresSafeArea()
-                
-                if viewModel.prescriptions.isEmpty {
-                    emptyPrescriptionsView
-                } else {
-                    List {
-                        ForEach(viewModel.prescriptions) { prescription in
-                            NavigationLink(
-                                destination: PrescriptionDetailsView(container: container, prescription: prescription)
-                            ) {
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text(prescription.name)
-                                        .font(.title3)
-                                    HStack {
-                                        Text("Medicamentos:")
-                                            .bold()
-                                        Text("\(prescription.medicines.count)")
-                                            .foregroundColor(.secondary)
-                                    }
-                                    HStack {
-                                        Text("Atualizada em:")
-                                            .bold()
-                                        Text(try! Date(prescription.updatedAt, strategy: .iso8601).formatted(date: .numeric, time: .omitted))
-                                            .foregroundColor(.secondary)
-                                    }
+        ZStack(alignment: .bottomTrailing) {
+            Color(uiColor: .systemGroupedBackground)
+                .ignoresSafeArea()
+            
+            if viewModel.prescriptions.isEmpty {
+                emptyPrescriptionsView
+            } else {
+                List {
+                    ForEach(viewModel.prescriptions) { prescription in
+                        Button(action: { coordinator.push(.prescriptionDetails(prescription)) }) {
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(prescription.name)
+                                    .font(.title3)
+                                HStack {
+                                    Text("Medicamentos:")
+                                        .bold()
+                                    Text("\(prescription.medicines.count)")
+                                        .foregroundColor(.secondary)
                                 }
-                                .padding(.vertical, 4)
+                                HStack {
+                                    Text("Atualizada em:")
+                                        .bold()
+                                    Text(try! Date(prescription.updatedAt, strategy: .iso8601).formatted(date: .numeric, time: .omitted))
+                                        .foregroundColor(.secondary)
+                                }
                             }
-                            .swipeActions(edge: .trailing) {
-                                Button(role: .destructive) {
-                                    prescriptionToDelete = prescription
-                                    showDeleteAlert = true
-                                } label: {
-                                    Label("Excluir", systemImage: "trash")
-                                }
+                            .padding(.vertical, 4)
+                        }
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                prescriptionToDelete = prescription
+                                showDeleteAlert = true
+                            } label: {
+                                Label("Excluir", systemImage: "trash")
                             }
                         }
                     }
-                    .listStyle(.insetGrouped)
                 }
+                .listStyle(.insetGrouped)
+            }
 
-                NavigationLink(destination: NewPrescriptionView(container: container)) {
-                    Image(systemName: "plus")
-                        .font(.title.bold())
-                        .foregroundColor(.white)
-                        .frame(width: 60, height: 60)
-                        .background(Color.blue)
-                        .clipShape(Circle())
-                        .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
-                }
-                .padding()
+            Button(action: { coordinator.push(.newPrescription) }) {
+                Image(systemName: "plus")
+                    .font(.title.bold())
+                    .foregroundColor(.white)
+                    .frame(width: 60, height: 60)
+                    .background(Color.blue)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
             }
-            .navigationTitle("Minhas receitas")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: viewModel.signOutUser) {
-                        Image(systemName: "rectangle.portrait.and.arrow.right")
-                    }
+            .padding()
+        }
+        .navigationTitle("Minhas receitas")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: viewModel.signOutUser) {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
                 }
             }
-            .alert("Excluir receita", isPresented: $showDeleteAlert) {
-                Button("Cancelar", role: .cancel) {
-                    prescriptionToDelete = nil
-                }
-                Button("Excluir", role: .destructive) {
-                    if let prescription = prescriptionToDelete {
-                        confirmDelete(prescription)
-                    }
-                }
-            } message: {
-                Text("Tem certeza que deseja excluir esta receita? \nEsta ação não pode ser desfeita")
+        }
+        .alert("Excluir receita", isPresented: $showDeleteAlert) {
+            Button("Cancelar", role: .cancel) {
+                prescriptionToDelete = nil
             }
-            .onAppear {
-                viewModel.fetchPrescriptions()
+            Button("Excluir", role: .destructive) {
+                if let prescription = prescriptionToDelete {
+                    confirmDelete(prescription)
+                }
             }
+        } message: {
+            Text("Tem certeza que deseja excluir esta receita? \nEsta ação não pode ser desfeita")
+        }
+        .onAppear {
+            viewModel.fetchPrescriptions()
         }
     }
     
@@ -132,5 +127,5 @@ struct MyPrescriptionsView: View {
 }
 
 #Preview {
-    MyPrescriptionsView(container: .preview)
+    MyPrescriptionsView(container: .preview).environmentObject(AppCoordinator.preview)
 }

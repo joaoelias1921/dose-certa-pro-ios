@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Prescription: Identifiable, Codable {
+struct Prescription: Identifiable, Codable, Hashable {
     @DocumentID var id: String?
     var name: String
     var medicines: [Medicine]

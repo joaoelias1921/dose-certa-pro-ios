@@ -17,47 +17,44 @@ struct AddMedicineView: View {
     var onSave: (Medicine) -> Void
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Detalhes do medicamento") {
-                    TextField("Nome", text: $name)
-                    TextField("Dosagem (ex: 1 comprimido)", text: $dosage)
-                    TextField("Frequência (ex: 8/8 horas)", text: $frequency)
-                }
-                
-                Section("Horário") {
-                    DatePicker(
-                        "Selecione o horário",
-                        selection: $selectedTime,
-                        displayedComponents: .hourAndMinute
-                    )
-                    .datePickerStyle(.wheel)
-                }
-                
-                Section("Observações") {
-                    TextField("Tomar após refeição", text: $observations)
-                }
+        Form {
+            Section("Detalhes do medicamento") {
+                TextField("Nome", text: $name)
+                TextField("Dosagem (ex: 1 comprimido)", text: $dosage)
+                TextField("Frequência (ex: 8/8 horas)", text: $frequency)
             }
-            .navigationTitle("Novo medicamento")
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Adicionar") {
-                        let timeString = selectedTime.formatted(date: .omitted, time: .shortened)
-                        
-                        let medicine = Medicine(
-                            name: name,
-                            dosage: dosage,
-                            frequency: frequency,
-                            observations: observations,
-                            timeToTake: timeString
-                        )
-                        onSave(medicine)
-                        dismiss()
-                    }
-                    .disabled(name.isEmpty || dosage.isEmpty || frequency.isEmpty)
-                }
+            
+            Section("Horário") {
+                DatePicker(
+                    "Selecione o horário",
+                    selection: $selectedTime,
+                    displayedComponents: .hourAndMinute
+                )
+                .datePickerStyle(.wheel)
+            }
+            
+            Section("Observações") {
+                TextField("Tomar após refeição", text: $observations)
             }
         }
-        .presentationDetents([.large])
+        .navigationTitle("Novo medicamento")
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Adicionar") {
+                    let timeString = selectedTime.formatted(date: .omitted, time: .shortened)
+                    
+                    let medicine = Medicine(
+                        name: name,
+                        dosage: dosage,
+                        frequency: frequency,
+                        observations: observations,
+                        timeToTake: timeString
+                    )
+                    onSave(medicine)
+                    dismiss()
+                }
+                .disabled(name.isEmpty || dosage.isEmpty || frequency.isEmpty)
+            }
+        }
     }
 }

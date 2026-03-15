@@ -12,10 +12,8 @@ struct EditPrescriptionView: View {
     @State private var viewModel: EditPrescriptionViewModel
     @State private var showAddMedicineSheet = false
     let prescription: Prescription
-    let container: DependencyContainer
     
     init(container: DependencyContainer, prescription: Prescription) {
-        self.container = container
         self.prescription = prescription
         self._viewModel = State(
             initialValue: EditPrescriptionViewModel(

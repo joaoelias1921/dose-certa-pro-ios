@@ -8,6 +8,7 @@
 import Foundation
 
 @Observable
+@MainActor
 class AuthViewModel {
     private let authService: AuthServiceProtocol
     private let userService: UserServiceProtocol

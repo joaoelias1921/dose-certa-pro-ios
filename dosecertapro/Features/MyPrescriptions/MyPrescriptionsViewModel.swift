@@ -58,7 +58,6 @@ class MyPrescriptionsViewModel {
         }
     }
     
-    @MainActor
     func signOutUser() {
         Task {
             do {

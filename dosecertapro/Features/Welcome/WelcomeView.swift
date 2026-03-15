@@ -8,39 +8,32 @@
 import SwiftUI
 
 struct WelcomeView: View {
-    let container: DependencyContainer
-    
-    init(container: DependencyContainer) {
-        self.container = container
-    }
+    @EnvironmentObject var coordinator: AppCoordinator
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                WelcomeLogo
-                Spacer()
-                Text("Bem vindo ao DoseCerta!")
-                    .bold()
-                    .font(.title)
-                Text("Seu assistente pessoal para gerenciamento de receitas. Vamos te ajudar a cuidar melhor da sua saúde centralizando os detalhes dos seus medicamentos em um só lugar")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-                    .padding(.top, 8)
-                    .padding(.bottom, 56)
-                    .multilineTextAlignment(.center)
-                NavigationLink(destination: AuthView(container: container)) {
-                    Text("Vamos lá")
-                        .frame(maxWidth: .infinity)
-                }
-                .padding()
-                .background(.blue)
-                .foregroundColor(.white)
-                .cornerRadius(12)
+        VStack {
+            WelcomeLogo
+            Spacer()
+            Text("Bem vindo ao DoseCerta!")
+                .bold()
+                .font(.title)
+            Text("Seu assistente pessoal para gerenciamento de receitas. Vamos te ajudar a cuidar melhor da sua saúde centralizando os detalhes dos seus medicamentos em um só lugar")
+                .font(.title3)
+                .foregroundColor(.secondary)
+                .padding(.top, 8)
+                .padding(.bottom, 56)
+                .multilineTextAlignment(.center)
+            Button(action: { coordinator.push(.auth) }) {
+                Text("Vamos lá").frame(maxWidth: .infinity)
             }
             .padding()
-            .padding(.top, 80)
-            .frame(maxWidth: .infinity)
+            .background(.blue)
+            .foregroundColor(.white)
+            .cornerRadius(12)
         }
+        .padding()
+        .padding(.top, 80)
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -58,5 +51,5 @@ private var WelcomeLogo: some View {
 }
 
 #Preview {
-    WelcomeView(container: .preview)
+    WelcomeView().environmentObject(AppCoordinator.preview)
 }

@@ -11,10 +11,8 @@ struct NewPrescriptionView: View {
     @Environment(\.dismiss) var dismiss
     @State private var viewModel: NewPrescriptionViewModel
     @State private var showAddMedicineSheet = false
-    let container: DependencyContainer
     
     init(container: DependencyContainer) {
-        self.container = container
         self._viewModel = State(
             initialValue: NewPrescriptionViewModel(
                 prescriptionService: container.prescriptionService,
@@ -23,59 +21,57 @@ struct NewPrescriptionView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("Nome da receita") {
-                    TextField("Vitaminas diárias", text: $viewModel.prescriptionName)
+        Form {
+            Section("Nome da receita") {
+                TextField("Vitaminas diárias", text: $viewModel.prescriptionName)
+            }
+            
+            Section("Medicamentos") {
+                if viewModel.medicines.isEmpty {
+                    Text("Você ainda não adicionou nenhum medicamento")
+                        .foregroundColor(.secondary)
+                        .font(.footnote)
+                } else {
+                    ForEach(viewModel.medicines) { medicine in
+                        medicineRow(medicine)
+                    }
                 }
                 
-                Section("Medicamentos") {
-                    if viewModel.medicines.isEmpty {
-                        Text("Você ainda não adicionou nenhum medicamento")
-                            .foregroundColor(.secondary)
-                            .font(.footnote)
-                    } else {
-                        ForEach(viewModel.medicines) { medicine in
-                            medicineRow(medicine)
-                        }
-                    }
-                    
-                    Button(action: { showAddMedicineSheet = true }) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.system(size: 24))
-                            Text("Adicionar medicamento")
-                                .foregroundColor(.blue)
-                        }
+                Button(action: { showAddMedicineSheet = true }) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 24))
+                        Text("Adicionar medicamento")
+                            .foregroundColor(.blue)
                     }
                 }
             }
-            .navigationTitle("Criar receita")
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Salvar") {
-                        Task {
-                            if await viewModel.save() {
-                                dismiss()
-                            }
+        }
+        .navigationTitle("Criar receita")
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Salvar") {
+                    Task {
+                        if await viewModel.save() {
+                            dismiss()
                         }
                     }
-                    .disabled(!viewModel.canSave)
                 }
+                .disabled(!viewModel.canSave)
             }
-            .sheet(isPresented: $showAddMedicineSheet) {
-                AddMedicineView { newMedicine in
-                    viewModel.addMedicine(newMedicine)
-                }
+        }
+        .sheet(isPresented: $showAddMedicineSheet) {
+            AddMedicineView { newMedicine in
+                viewModel.addMedicine(newMedicine)
             }
-            .alert("Erro", isPresented: Binding(
-                get: { viewModel.errorMessage != nil },
-                set: { _ in viewModel.errorMessage = nil }
-            )) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text(viewModel.errorMessage ?? "")
-            }
+        }
+        .alert("Erro", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { _ in viewModel.errorMessage = nil }
+        )) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(viewModel.errorMessage ?? "")
         }
     }
     

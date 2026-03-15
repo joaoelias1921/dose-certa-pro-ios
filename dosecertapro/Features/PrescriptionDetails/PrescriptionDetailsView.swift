@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct PrescriptionDetailsView: View {
-    @State private var showEditSheet = false
+    @EnvironmentObject var coordinator: AppCoordinator
     let prescription: Prescription
-    let container: DependencyContainer
     
-    init(container: DependencyContainer, prescription: Prescription) {
-        self.container = container
+    init(prescription: Prescription) {
         self.prescription = prescription
     }
     
@@ -54,13 +52,8 @@ struct PrescriptionDetailsView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Editar") {
-                    showEditSheet = true
+                    coordinator.presentSheet(.editPrescription(prescription))
                 }
-            }
-        }
-        .sheet(isPresented: $showEditSheet) {
-            NavigationStack {
-                EditPrescriptionView(container: container, prescription: prescription)
             }
         }
     }
@@ -79,7 +72,7 @@ struct PrescriptionDetailsView: View {
 }
 
 #Preview {
-    PrescriptionDetailsView(container: .preview, prescription: Prescription(
+    PrescriptionDetailsView(prescription: Prescription(
         id: "1234",
         name: "Receita do Dr. Alex",
         medicines: [

@@ -22,6 +22,14 @@ final class DependencyContainer {
 }
 
 extension DependencyContainer {
+    static func createReal() -> DependencyContainer {
+        return DependencyContainer(
+            prescriptionService: FirebasePrescriptionService(),
+            authService: FirebaseAuthService(),
+            userService: FirebaseUserService()
+        )
+    }
+    
     @MainActor
     static var preview: DependencyContainer {
         let mockPrescriptionService = MockPrescriptionService()

@@ -8,6 +8,16 @@
 import FirebaseAuth
 
 class FirebaseAuthService: AuthServiceProtocol {
+    var isUserLoggedIn: Bool {
+        return Auth.auth().currentUser != nil
+    }
+    
+    func listenToAuthState(completion: @escaping (Bool) -> Void) {
+        Auth.auth().addStateDidChangeListener { _, user in
+            completion(user != nil)
+        }
+    }
+    
     func signIn(email: String, password: String) async throws {
         do {
             try await Auth.auth().signIn(withEmail: email, password: password)

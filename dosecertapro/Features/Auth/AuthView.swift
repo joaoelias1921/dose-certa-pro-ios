@@ -9,13 +9,11 @@ import SwiftUI
 
 struct AuthView: View {
     @State private var viewModel: AuthViewModel
-    let container: DependencyContainer
     var eighteenYearsAgo: Date {
         Calendar.current.date(byAdding: .year, value: -18, to: .now) ?? .now
     }
     
     init(container: DependencyContainer) {
-        self.container = container
         self._viewModel = State(
             initialValue: AuthViewModel(
                 authService: container.authService,
@@ -25,7 +23,7 @@ struct AuthView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        VStack {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(viewModel.isSignUp ? "Crie sua conta" : "Bem vindo")
@@ -39,7 +37,7 @@ struct AuthView: View {
                             .padding(.vertical, 16)
                     }
                 }
-
+                
                 VStack(spacing: 15) {
                     if viewModel.isSignUp {
                         VStack(alignment: .leading) {
@@ -87,7 +85,7 @@ struct AuthView: View {
                     }
                 }
                 .padding(.vertical, 16)
-
+                
                 Button {
                     Task {
                         await viewModel.authenticate()
@@ -101,7 +99,7 @@ struct AuthView: View {
                         .cornerRadius(10)
                 }
                 .disabled(!viewModel.isFormValid)
-
+                
                 HStack {
                     Spacer()
                     Button(viewModel.isSignUp ? "Já possui uma conta? Faça login" : "Não possui uma conta? Crie uma agora") {
@@ -126,5 +124,5 @@ struct AuthView: View {
 }
 
 #Preview {
-    AuthView(container: .preview)
+    AuthView(container: .preview).environmentObject(AppCoordinator.preview)
 }

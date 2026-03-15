@@ -6,7 +6,9 @@
 //
 
 protocol AuthServiceProtocol {
+    var isUserLoggedIn: Bool { get }
     func signIn(email: String, password: String) async throws
     func signUp(email: String, password: String) async throws -> String
     func signOut() async throws
+    func listenToAuthState(completion: @escaping (Bool) -> Void)
 }
