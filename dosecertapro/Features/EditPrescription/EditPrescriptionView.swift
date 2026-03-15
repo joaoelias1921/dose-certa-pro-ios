@@ -11,15 +11,24 @@ struct EditPrescriptionView: View {
     @Environment(\.dismiss) var dismiss
     @State private var viewModel: EditPrescriptionViewModel
     @State private var showAddMedicineSheet = false
+    let prescription: Prescription
+    let container: DependencyContainer
     
-    init(prescription: Prescription) {
-        _viewModel = State(initialValue: EditPrescriptionViewModel(prescription: prescription))
+    init(container: DependencyContainer, prescription: Prescription) {
+        self.container = container
+        self.prescription = prescription
+        self._viewModel = State(
+            initialValue: EditPrescriptionViewModel(
+                prescription: prescription,
+                prescriptionService: container.prescriptionService
+            )
+        )
     }
     
     var body: some View {
         Form {
             Section("Nome da receita") {
-                TextField("Ex: Medicação Diária", text: $viewModel.prescriptionName)
+                TextField("Ex: Medicação Diária", text: $viewModel.prescription.name)
             }
             
             Section("Medicamentos") {
@@ -55,8 +64,10 @@ struct EditPrescriptionView: View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Salvar") {
-                    viewModel.updatePrescription { success in
-                        if success { dismiss() }
+                    Task {
+                        if await viewModel.updatePrescription() {
+                            dismiss()
+                        }
                     }
                 }
                 .disabled(!viewModel.canSave)
@@ -73,4 +84,24 @@ struct EditPrescriptionView: View {
             }
         }
     }
+}
+
+#Preview {
+    EditPrescriptionView(container: .preview, prescription: Prescription(
+        id: "1",
+        name: "Receita 1",
+        medicines: [
+            Medicine(
+                id: "1",
+                name: "Nome do medicamento",
+                dosage: "100mg",
+                frequency: "8/8",
+                observations: "Observações",
+                timeToTake: "12:00"
+            )
+        ],
+        userId: "123_user",
+        createdAt: "2026-03-14T15:00:00Z",
+        updatedAt: "2026-03-14T15:00:00Z"
+    ))
 }

@@ -8,6 +8,12 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    let container: DependencyContainer
+    
+    init(container: DependencyContainer) {
+        self.container = container
+    }
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -22,7 +28,7 @@ struct WelcomeView: View {
                     .padding(.top, 8)
                     .padding(.bottom, 56)
                     .multilineTextAlignment(.center)
-                NavigationLink(destination: AuthView()) {
+                NavigationLink(destination: AuthView(container: container)) {
                     Text("Vamos lá")
                         .frame(maxWidth: .infinity)
                 }
@@ -52,5 +58,5 @@ private var WelcomeLogo: some View {
 }
 
 #Preview {
-    WelcomeView()
+    WelcomeView(container: .preview)
 }

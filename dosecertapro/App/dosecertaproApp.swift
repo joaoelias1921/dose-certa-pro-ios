@@ -18,10 +18,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct dosecertaproApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    let dependencyContainer = DependencyContainer()
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(container: dependencyContainer)
         }
     }
 }

@@ -6,12 +6,21 @@
 //
 
 import SwiftUI
-import FirebaseAuth
 
 struct NewPrescriptionView: View {
     @Environment(\.dismiss) var dismiss
-    @State private var viewModel = NewPrescriptionViewModel()
+    @State private var viewModel: NewPrescriptionViewModel
     @State private var showAddMedicineSheet = false
+    let container: DependencyContainer
+    
+    init(container: DependencyContainer) {
+        self.container = container
+        self._viewModel = State(
+            initialValue: NewPrescriptionViewModel(
+                prescriptionService: container.prescriptionService,
+            )
+        )
+    }
     
     var body: some View {
         NavigationStack {
@@ -45,8 +54,10 @@ struct NewPrescriptionView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Salvar") {
-                        viewModel.save { success in
-                            if success { dismiss() }
+                        Task {
+                            if await viewModel.save() {
+                                dismiss()
+                            }
                         }
                     }
                     .disabled(!viewModel.canSave)
@@ -116,5 +127,5 @@ struct NewPrescriptionView: View {
 }
 
 #Preview {
-    NewPrescriptionView()
+    NewPrescriptionView(container: .preview)
 }

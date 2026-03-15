@@ -10,6 +10,12 @@ import SwiftUI
 struct PrescriptionDetailsView: View {
     @State private var showEditSheet = false
     let prescription: Prescription
+    let container: DependencyContainer
+    
+    init(container: DependencyContainer, prescription: Prescription) {
+        self.container = container
+        self.prescription = prescription
+    }
     
     var body: some View {
         List {
@@ -54,7 +60,7 @@ struct PrescriptionDetailsView: View {
         }
         .sheet(isPresented: $showEditSheet) {
             NavigationStack {
-                EditPrescriptionView(prescription: prescription)
+                EditPrescriptionView(container: container, prescription: prescription)
             }
         }
     }
@@ -73,7 +79,7 @@ struct PrescriptionDetailsView: View {
 }
 
 #Preview {
-    PrescriptionDetailsView(prescription: Prescription(
+    PrescriptionDetailsView(container: .preview, prescription: Prescription(
         id: "1234",
         name: "Receita do Dr. Alex",
         medicines: [

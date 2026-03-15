@@ -8,9 +8,20 @@
 import SwiftUI
 
 struct AuthView: View {
-    @State private var viewModel = AuthViewModel()
+    @State private var viewModel: AuthViewModel
+    let container: DependencyContainer
     var eighteenYearsAgo: Date {
         Calendar.current.date(byAdding: .year, value: -18, to: .now) ?? .now
+    }
+    
+    init(container: DependencyContainer) {
+        self.container = container
+        self._viewModel = State(
+            initialValue: AuthViewModel(
+                authService: container.authService,
+                userService: container.userService
+            )
+        )
     }
     
     var body: some View {
@@ -40,10 +51,11 @@ struct AuthView: View {
                         }
                         
                         VStack(alignment: .leading) {
-                            DatePicker("Data de nascimento",
-                                       selection: $viewModel.birthDate,
-                                       in: ...eighteenYearsAgo,
-                                       displayedComponents: .date
+                            DatePicker(
+                                "Data de nascimento",
+                                selection: $viewModel.birthDate,
+                                in: ...eighteenYearsAgo,
+                                displayedComponents: .date
                             )
                             
                             Text("Você deve ter 18 anos ou mais para utilizar o DoseCerta")
@@ -77,7 +89,9 @@ struct AuthView: View {
                 .padding(.vertical, 16)
 
                 Button {
-                    viewModel.authenticate()
+                    Task {
+                        await viewModel.authenticate()
+                    }
                 } label: {
                     Text(viewModel.isSignUp ? "Criar conta" : "Entrar")
                         .frame(maxWidth: .infinity)
@@ -112,5 +126,5 @@ struct AuthView: View {
 }
 
 #Preview {
-    AuthView()
+    AuthView(container: .preview)
 }

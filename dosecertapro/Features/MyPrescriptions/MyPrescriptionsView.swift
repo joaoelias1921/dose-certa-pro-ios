@@ -8,10 +8,21 @@
 import SwiftUI
 
 struct MyPrescriptionsView: View {
-    @State private var viewModel = MyPrescriptionsViewModel()
+    @State private var viewModel: MyPrescriptionsViewModel
     @State private var showDeleteAlert = false
     @State private var prescriptionToDelete: Prescription?
     @State private var showAlert = true
+    let container: DependencyContainer
+    
+    init(container: DependencyContainer) {
+        self.container = container
+        self._viewModel = State(
+            initialValue: MyPrescriptionsViewModel(
+                prescriptionService: container.prescriptionService,
+                authService: container.authService
+            )
+        )
+    }
     
     var body: some View {
         NavigationStack {
@@ -24,7 +35,9 @@ struct MyPrescriptionsView: View {
                 } else {
                     List {
                         ForEach(viewModel.prescriptions) { prescription in
-                            NavigationLink(destination: PrescriptionDetailsView(prescription: prescription)) {
+                            NavigationLink(
+                                destination: PrescriptionDetailsView(container: container, prescription: prescription)
+                            ) {
                                 VStack(alignment: .leading, spacing: 5) {
                                     Text(prescription.name)
                                         .font(.title3)
@@ -56,7 +69,7 @@ struct MyPrescriptionsView: View {
                     .listStyle(.insetGrouped)
                 }
 
-                NavigationLink(destination: NewPrescriptionView()) {
+                NavigationLink(destination: NewPrescriptionView(container: container)) {
                     Image(systemName: "plus")
                         .font(.title.bold())
                         .foregroundColor(.white)
@@ -119,5 +132,5 @@ struct MyPrescriptionsView: View {
 }
 
 #Preview {
-    MyPrescriptionsView()
+    MyPrescriptionsView(container: .preview)
 }
