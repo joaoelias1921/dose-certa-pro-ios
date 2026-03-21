@@ -40,14 +40,16 @@ struct MyPrescriptionsView: View {
                                 HStack {
                                     Text("Medicamentos:")
                                         .bold()
+                                        .foregroundStyle(.black)
                                     Text("\(prescription.medicines.count)")
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(.blue)
                                 }
                                 HStack {
                                     Text("Atualizada em:")
                                         .bold()
+                                        .foregroundStyle(.black)
                                     Text(try! Date(prescription.updatedAt, strategy: .iso8601).formatted(date: .numeric, time: .omitted))
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(.blue)
                                 }
                             }
                             .padding(.vertical, 4)

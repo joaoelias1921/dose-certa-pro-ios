@@ -26,6 +26,11 @@ class MockPrescriptionService: PrescriptionServiceProtocol {
         completion(.success(mockPrescriptions))
     }
     
+    func observeSinglePrescription(id: String, completion: @escaping (Result<Prescription, any Error>) -> Void) -> () -> Void {
+        completion(.success(mockPrescriptions[0]))
+        return {}
+    }
+    
     func deletePrescription(id: String) async throws {
         deleteCalled = true
     }

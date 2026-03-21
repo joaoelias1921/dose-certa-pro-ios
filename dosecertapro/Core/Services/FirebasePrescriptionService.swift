@@ -27,7 +27,7 @@ class FirebasePrescriptionService: PrescriptionServiceProtocol {
         let updatedData: [String: Any] = [
             "name": updatedPrescription.name,
             "medicines": updatedPrescription.medicines.map {[
-                "id": $0.id ?? UUID().uuidString,
+                "id": $0.id,
                 "name": $0.name,
                 "dosage": $0.dosage,
                 "frequency": $0.frequency,
@@ -60,6 +60,25 @@ class FirebasePrescriptionService: PrescriptionServiceProtocol {
                 
                 completion(.success(prescriptions))
             }
+    }
+    
+    func observeSinglePrescription(id: String, completion: @escaping (Result<Prescription, Error>) -> Void) -> (() -> Void) {
+        let listener = db.collection("prescriptions")
+            .document(id)
+            .addSnapshotListener { documentSnapshot, error in
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+                
+                guard let document = documentSnapshot, document.exists, let prescription = try? document.data(as: Prescription.self) else {
+                    return
+                }
+                
+                completion(.success(prescription))
+            }
+        
+        return { listener.remove() }
     }
     
     func deletePrescription(id: String) async throws {

@@ -9,15 +9,18 @@ final class DependencyContainer {
     let prescriptionService: PrescriptionServiceProtocol
     let authService: AuthServiceProtocol
     let userService: UserServiceProtocol
+    var onboardingService: OnboardingServiceProtocol
     
     init(
         prescriptionService: PrescriptionServiceProtocol = FirebasePrescriptionService(),
         authService: AuthServiceProtocol = FirebaseAuthService(),
-        userService: UserServiceProtocol = FirebaseUserService()
+        userService: UserServiceProtocol = FirebaseUserService(),
+        onboardingService: OnboardingServiceProtocol = OnboardingService()
     ) {
         self.prescriptionService = prescriptionService
         self.authService = authService
         self.userService = userService
+        self.onboardingService = onboardingService
     }
 }
 
@@ -26,7 +29,8 @@ extension DependencyContainer {
         return DependencyContainer(
             prescriptionService: FirebasePrescriptionService(),
             authService: FirebaseAuthService(),
-            userService: FirebaseUserService()
+            userService: FirebaseUserService(),
+            onboardingService: OnboardingService()
         )
     }
     

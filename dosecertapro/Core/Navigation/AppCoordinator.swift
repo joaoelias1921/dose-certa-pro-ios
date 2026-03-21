@@ -8,6 +8,12 @@
 import SwiftUI
 import Combine
 
+enum AppState {
+    case authenticated
+    case onboarding
+    case unauthenticated
+}
+
 enum AppRoute: Hashable {
     case welcome
     case auth
@@ -22,11 +28,19 @@ class AppCoordinator: ObservableObject {
     @Published var path = NavigationPath()
     @Published var isAuthenticated: Bool = false
     @Published var sheetRoute: AppRoute?
+    @Published var hasSeenOnboarding: Bool
     private let container: DependencyContainer
+    
+    var appState: AppState {
+        if isAuthenticated { return .authenticated }
+        if !hasSeenOnboarding { return .onboarding }
+        return .unauthenticated
+    }
     
     init(container: DependencyContainer) {
         self.container = container
         self.isAuthenticated = container.authService.isUserLoggedIn
+        self.hasSeenOnboarding = container.onboardingService.hasSeenOnboarding
         setupAuthListener()
     }
     
@@ -46,6 +60,12 @@ class AppCoordinator: ObservableObject {
         self.sheetRoute = nil
     }
     
+    func completeWelcome() {
+        container.onboardingService.hasSeenOnboarding = true
+        self.hasSeenOnboarding = true
+        push(.auth)
+    }
+    
     @ViewBuilder
     func build(route: AppRoute) -> some View {
         switch route {
@@ -60,21 +80,20 @@ class AppCoordinator: ObservableObject {
         case .editPrescription(let prescription):
             EditPrescriptionView(container: container, prescription: prescription)
         case .prescriptionDetails(let prescription):
-            PrescriptionDetailsView(prescription: prescription)
+            PrescriptionDetailsView(container: container, prescription: prescription)
         }
     }
     
     private func setupAuthListener() {
         container.authService.listenToAuthState { [weak self] loggedIn in
-            print("DEBUG: Auth state changed. LoggedIn: \(loggedIn)")
             DispatchQueue.main.async {
-                if loggedIn {
-                    self?.path = NavigationPath()
-                }
                 self?.isAuthenticated = loggedIn
-                if !loggedIn {
-                    self?.path = NavigationPath()
+                
+                if let service = self?.container.onboardingService {
+                    self?.hasSeenOnboarding = service.hasSeenOnboarding
                 }
+                
+                self?.path = NavigationPath()
             }
         }
     }

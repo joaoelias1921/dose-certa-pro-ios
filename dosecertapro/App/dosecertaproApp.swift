@@ -22,27 +22,22 @@ struct dosecertaproApp: App {
     
     var body: some Scene {
         WindowGroup {
-            Group {
-                if coordinator.isAuthenticated {
-                    NavigationStack(path: $coordinator.path) {
-                        coordinator
-                            .build(route: .myPrescriptions)
-                            .navigationDestination(for: AppRoute.self) { route in
-                                coordinator.build(route: route)
-                            }
+            NavigationStack(path: $coordinator.path) {
+                Group {
+                    switch coordinator.appState {
+                    case .authenticated:
+                        coordinator.build(route: .myPrescriptions)
+                    case .onboarding:
+                        coordinator.build(route: .welcome)
+                    case .unauthenticated:
+                        coordinator.build(route: .auth)
                     }
-                    .id("authenticated")
-                } else {
-                    NavigationStack(path: $coordinator.path) {
-                        coordinator
-                            .build(route: .welcome)
-                            .navigationDestination(for: AppRoute.self) { route in
-                                coordinator.build(route: route)
-                            }
-                    }
-                    .id("unauthenticated")
+                }
+                .navigationDestination(for: AppRoute.self) { route in
+                    coordinator.build(route: route)
                 }
             }
+            .id(coordinator.appState)
             .environmentObject(coordinator)
             .sheet(
                 item: Binding(
@@ -52,6 +47,7 @@ struct dosecertaproApp: App {
                 NavigationStack {
                     coordinator.build(route: route)
                 }
+                .environmentObject(coordinator)
             }
         }
     }

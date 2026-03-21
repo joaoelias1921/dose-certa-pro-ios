@@ -8,17 +8,20 @@
 import SwiftUI
 
 struct PrescriptionDetailsView: View {
+    @State private var viewModel: PrescriptionDetailsViewModel
     @EnvironmentObject var coordinator: AppCoordinator
-    let prescription: Prescription
     
-    init(prescription: Prescription) {
-        self.prescription = prescription
+    init(container: DependencyContainer, prescription: Prescription) {
+        self._viewModel = State(initialValue: PrescriptionDetailsViewModel(
+            prescriptionService: container.prescriptionService,
+            prescription: prescription
+        ))
     }
     
     var body: some View {
         List {
             Section(header: Text("Medicamentos")) {
-                ForEach(prescription.medicines, id: \.name) { medicine in
+                ForEach(viewModel.prescription.medicines, id: \.name) { medicine in
                     VStack(alignment: .leading, spacing: 8) {
                         Text(medicine.name)
                             .font(.title3.bold())
@@ -47,12 +50,12 @@ struct PrescriptionDetailsView: View {
                 }
             }
         }
-        .navigationTitle(prescription.name)
+        .navigationTitle(viewModel.prescription.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Editar") {
-                    coordinator.presentSheet(.editPrescription(prescription))
+                    coordinator.presentSheet(.editPrescription(viewModel.prescription))
                 }
             }
         }
@@ -72,7 +75,7 @@ struct PrescriptionDetailsView: View {
 }
 
 #Preview {
-    PrescriptionDetailsView(prescription: Prescription(
+    let prescriptionMock = Prescription(
         id: "1234",
         name: "Receita do Dr. Alex",
         medicines: [
@@ -100,6 +103,8 @@ struct PrescriptionDetailsView: View {
         ],
         userId: "1",
         createdAt: "22/12/2025",
-        updatedAt: "22/12/2025")
+        updatedAt: "22/12/2025"
     )
+    
+    PrescriptionDetailsView(container: .preview, prescription: prescriptionMock)
 }

@@ -23,7 +23,7 @@ struct WelcomeView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 56)
                 .multilineTextAlignment(.center)
-            Button(action: { coordinator.push(.auth) }) {
+            Button(action: { coordinator.completeWelcome() }) {
                 Text("Vamos lá").frame(maxWidth: .infinity)
             }
             .padding()

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct EditPrescriptionView: View {
+    @EnvironmentObject var coordinator: AppCoordinator
     @Environment(\.dismiss) var dismiss
     @State private var viewModel: EditPrescriptionViewModel
     @State private var showAddMedicineSheet = false
@@ -30,7 +31,7 @@ struct EditPrescriptionView: View {
             }
             
             Section("Medicamentos") {
-                ForEach(viewModel.medicines, id: \.name) { medicine in
+                ForEach(viewModel.medicines) { medicine in
                     VStack(alignment: .leading) {
                         Text(medicine.name).font(.headline)
                         Text("\(medicine.dosage) • \(medicine.frequency)")
@@ -62,10 +63,9 @@ struct EditPrescriptionView: View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Salvar") {
+                    coordinator.dismissSheet()
                     Task {
-                        if await viewModel.updatePrescription() {
-                            dismiss()
-                        }
+                        await viewModel.updatePrescription()
                     }
                 }
                 .disabled(!viewModel.canSave)
