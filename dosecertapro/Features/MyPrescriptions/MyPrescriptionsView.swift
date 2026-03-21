@@ -14,13 +14,8 @@ struct MyPrescriptionsView: View {
     @State private var prescriptionToDelete: Prescription?
     @State private var showAlert = true
     
-    init(container: DependencyContainer) {
-        self._viewModel = State(
-            initialValue: MyPrescriptionsViewModel(
-                prescriptionService: container.prescriptionService,
-                authService: container.authService
-            )
-        )
+    init(viewModel: MyPrescriptionsViewModel) {
+        self._viewModel = State(initialValue: viewModel)
     }
     
     var body: some View {
@@ -129,5 +124,6 @@ struct MyPrescriptionsView: View {
 }
 
 #Preview {
-    MyPrescriptionsView(container: .preview).environmentObject(AppCoordinator.preview)
+    let container = DependencyContainer.preview
+    container.makeMyPrescriptionsView()
 }

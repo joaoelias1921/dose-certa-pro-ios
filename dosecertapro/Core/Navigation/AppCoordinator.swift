@@ -29,7 +29,8 @@ class AppCoordinator: ObservableObject {
     @Published var isAuthenticated: Bool = false
     @Published var sheetRoute: AppRoute?
     @Published var hasSeenOnboarding: Bool
-    private let container: DependencyContainer
+    private let viewFactory: ViewControllerFactoryProtocol
+    private var stateProvider: AppStateProviderProtocol
     
     var appState: AppState {
         if isAuthenticated { return .authenticated }
@@ -37,10 +38,11 @@ class AppCoordinator: ObservableObject {
         return .unauthenticated
     }
     
-    init(container: DependencyContainer) {
-        self.container = container
-        self.isAuthenticated = container.authService.isUserLoggedIn
-        self.hasSeenOnboarding = container.onboardingService.hasSeenOnboarding
+    init(viewFactory: ViewControllerFactoryProtocol, stateProvider: AppStateProviderProtocol) {
+        self.viewFactory = viewFactory
+        self.stateProvider = stateProvider
+        self.isAuthenticated = stateProvider.isUserLoggedIn
+        self.hasSeenOnboarding = stateProvider.hasSeenOnboarding
         setupAuthListener()
     }
     
@@ -61,9 +63,13 @@ class AppCoordinator: ObservableObject {
     }
     
     func completeWelcome() {
-        container.onboardingService.hasSeenOnboarding = true
+        stateProvider.hasSeenOnboarding = true
         self.hasSeenOnboarding = true
         push(.auth)
+    }
+    
+    func makeAddMedicineView(onSave: @escaping (Medicine) -> Void) -> AddMedicineView {
+        viewFactory.makeAddMedicineView(onSave: onSave)
     }
     
     @ViewBuilder
@@ -72,27 +78,23 @@ class AppCoordinator: ObservableObject {
         case .welcome:
             WelcomeView()
         case .auth:
-            AuthView(container: container)
+            viewFactory.makeAuthView()
         case .myPrescriptions:
-            MyPrescriptionsView(container: container)
+            viewFactory.makeMyPrescriptionsView()
         case .newPrescription:
-            NewPrescriptionView(container: container)
+            viewFactory.makeNewPrescriptionView()
         case .editPrescription(let prescription):
-            EditPrescriptionView(container: container, prescription: prescription)
+            viewFactory.makeEditPrescriptionView(prescription: prescription)
         case .prescriptionDetails(let prescription):
-            PrescriptionDetailsView(container: container, prescription: prescription)
+            viewFactory.makePrescriptionDetailsView(prescription: prescription)
         }
     }
     
     private func setupAuthListener() {
-        container.authService.listenToAuthState { [weak self] loggedIn in
-            DispatchQueue.main.async {
+        stateProvider.listenToAuthState { [weak self] loggedIn in
+            Task { @MainActor in
                 self?.isAuthenticated = loggedIn
-                
-                if let service = self?.container.onboardingService {
-                    self?.hasSeenOnboarding = service.hasSeenOnboarding
-                }
-                
+                self?.hasSeenOnboarding = self?.stateProvider.hasSeenOnboarding ?? false
                 self?.path = NavigationPath()
             }
         }
@@ -102,7 +104,11 @@ class AppCoordinator: ObservableObject {
 extension AppCoordinator {
     @MainActor
     static var preview: AppCoordinator {
-        return AppCoordinator(container: .preview)
+        let previewContainer = DependencyContainer.preview
+        return AppCoordinator(
+            viewFactory: previewContainer,
+            stateProvider: previewContainer
+        )
     }
 }
 

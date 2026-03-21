@@ -13,13 +13,8 @@ struct AuthView: View {
         Calendar.current.date(byAdding: .year, value: -18, to: .now) ?? .now
     }
     
-    init(container: DependencyContainer) {
-        self._viewModel = State(
-            initialValue: AuthViewModel(
-                authService: container.authService,
-                userService: container.userService
-            )
-        )
+    init(viewModel: AuthViewModel) {
+        self._viewModel = State(initialValue: viewModel)
     }
     
     var body: some View {
@@ -124,5 +119,6 @@ struct AuthView: View {
 }
 
 #Preview {
-    AuthView(container: .preview).environmentObject(AppCoordinator.preview)
+    let container = DependencyContainer.preview
+    container.makeAuthView().environmentObject(AppCoordinator.preview)
 }

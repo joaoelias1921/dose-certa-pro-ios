@@ -8,16 +8,13 @@
 import SwiftUI
 
 struct NewPrescriptionView: View {
+    @EnvironmentObject var coordinator: AppCoordinator
     @Environment(\.dismiss) var dismiss
     @State private var viewModel: NewPrescriptionViewModel
     @State private var showAddMedicineSheet = false
     
-    init(container: DependencyContainer) {
-        self._viewModel = State(
-            initialValue: NewPrescriptionViewModel(
-                prescriptionService: container.prescriptionService,
-            )
-        )
+    init(viewModel: NewPrescriptionViewModel) {
+        self._viewModel = State(initialValue: viewModel)
     }
     
     var body: some View {
@@ -61,7 +58,7 @@ struct NewPrescriptionView: View {
             }
         }
         .sheet(isPresented: $showAddMedicineSheet) {
-            AddMedicineView { newMedicine in
+            coordinator.makeAddMedicineView { newMedicine in
                 viewModel.addMedicine(newMedicine)
             }
         }
@@ -123,5 +120,6 @@ struct NewPrescriptionView: View {
 }
 
 #Preview {
-    NewPrescriptionView(container: .preview)
+    let container = DependencyContainer.preview
+    container.makeNewPrescriptionView()
 }

@@ -18,7 +18,17 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct dosecertaproApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @StateObject private var coordinator = AppCoordinator(container: .createReal())
+    @StateObject private var coordinator: AppCoordinator
+    private let container: DependencyContainer
+    
+    init() {
+        let container = DependencyContainer.createReal()
+        self.container = container
+        _coordinator = StateObject(wrappedValue: AppCoordinator(
+            viewFactory: container,
+            stateProvider: container
+        ))
+    }
     
     var body: some Scene {
         WindowGroup {

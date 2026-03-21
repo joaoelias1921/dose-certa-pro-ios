@@ -12,16 +12,9 @@ struct EditPrescriptionView: View {
     @Environment(\.dismiss) var dismiss
     @State private var viewModel: EditPrescriptionViewModel
     @State private var showAddMedicineSheet = false
-    let prescription: Prescription
     
-    init(container: DependencyContainer, prescription: Prescription) {
-        self.prescription = prescription
-        self._viewModel = State(
-            initialValue: EditPrescriptionViewModel(
-                prescription: prescription,
-                prescriptionService: container.prescriptionService
-            )
-        )
+    init(viewModel: EditPrescriptionViewModel) {
+        self._viewModel = State(initialValue: viewModel)
     }
     
     var body: some View {
@@ -72,8 +65,9 @@ struct EditPrescriptionView: View {
             }
         }
         .sheet(isPresented: $showAddMedicineSheet) {
-            AddMedicineView { newMedicine in
+            coordinator.makeAddMedicineView { newMedicine in
                 viewModel.addMedicine(newMedicine)
+                showAddMedicineSheet = false
             }
         }
         .overlay {
@@ -85,7 +79,8 @@ struct EditPrescriptionView: View {
 }
 
 #Preview {
-    EditPrescriptionView(container: .preview, prescription: Prescription(
+    let container = DependencyContainer.preview
+    container.makeEditPrescriptionView(prescription: Prescription(
         id: "1",
         name: "Receita 1",
         medicines: [

@@ -11,11 +11,8 @@ struct PrescriptionDetailsView: View {
     @State private var viewModel: PrescriptionDetailsViewModel
     @EnvironmentObject var coordinator: AppCoordinator
     
-    init(container: DependencyContainer, prescription: Prescription) {
-        self._viewModel = State(initialValue: PrescriptionDetailsViewModel(
-            prescriptionService: container.prescriptionService,
-            prescription: prescription
-        ))
+    init(viewModel: PrescriptionDetailsViewModel) {
+        self._viewModel = State(initialValue: viewModel)
     }
     
     var body: some View {
@@ -75,7 +72,8 @@ struct PrescriptionDetailsView: View {
 }
 
 #Preview {
-    let prescriptionMock = Prescription(
+    let container = DependencyContainer.preview
+    container.makePrescriptionDetailsView(prescription: Prescription(
         id: "1234",
         name: "Receita do Dr. Alex",
         medicines: [
@@ -104,7 +102,5 @@ struct PrescriptionDetailsView: View {
         userId: "1",
         createdAt: "22/12/2025",
         updatedAt: "22/12/2025"
-    )
-    
-    PrescriptionDetailsView(container: .preview, prescription: prescriptionMock)
+    ))
 }
