@@ -76,7 +76,7 @@ class AppCoordinator: ObservableObject {
     func build(route: AppRoute) -> some View {
         switch route {
         case .welcome:
-            WelcomeView()
+            viewFactory.makeWelcomeView()
         case .auth:
             viewFactory.makeAuthView()
         case .myPrescriptions:
