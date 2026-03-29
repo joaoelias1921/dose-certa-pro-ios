@@ -61,8 +61,8 @@ enum AppError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .signUpInvalidCredentials: return "O formato do e-mail é inválido"
-        case .signInInvalidCredentials: return "Usuário ou senha incorretos."
-        case .unknown: return "Algo deu errado. Tente novamente."
+        case .signInInvalidCredentials: return "Usuário ou senha incorretos"
+        case .unknown: return "Algo deu errado. Tente novamente"
         }
     }
 }
