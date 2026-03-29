@@ -49,6 +49,3 @@ O app possui uma suíte de testes que valida o "Core" do sistema sem necessidade
 * **SwiftUI** + **Combine**
 * **Firebase** (Firestore & Auth)
 * **XCTest Framework**
-
----
-*Este é um projeto de portfólio focado em demonstrar competência técnica em arquitetura iOS.*
